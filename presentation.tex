@@ -1,0 +1,249 @@
+% Created 2016-09-24 Sat 12:47
+\documentclass[presentation]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage{tabu}
+\usepackage{minted}
+\hypersetup{pdfauthor="Vasilij Schneidermann", pdftitle="Explorations in GUI programming with CHICKEN", colorlinks, linkcolor=black, urlcolor=blue}
+\usetheme{Rochester}
+\usecolortheme[RGB={87,83,170}]{structure}
+\author{Vasilij Schneidermann}
+\date{September 2016}
+\title{Explorations in GUI programming with CHICKEN}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.5.1 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+\AtBeginSection{\frame{\sectionpage}}
+
+\section{Intro}
+\label{sec-1}
+
+\begin{frame}[label=sec-1-1]{About}
+\begin{itemize}
+\item Vasilij Schneidermann, 24
+\item Information systems student
+\item Working at bevuta IT, Cologne
+\item \texttt{v.schneidermann@gmail.com}
+\item \url{https://github.com/wasamasa}
+\item \url{http://emacshorrors.com/}
+\item \url{http://emacsninja.com/}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-1-2]{How it came to be}
+\begin{itemize}
+\item Thesis about CS and or economics
+\item Difficulties finding a topic
+\item Employer suggested CHICKEN
+\item -> CHICKEN's GUI programming support
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-1-3]{General approach}
+\begin{itemize}
+\item Looking at existing GUI libraries
+\item Understanding how GUIs work
+\item Reading (mostly useless) papers
+\item Surveying existing eggs
+\item Finding approach for developing new eggs
+\item Evaluating new eggs
+\item Recommendations for beginners
+\end{itemize}
+\end{frame}
+
+\section{Basics}
+\label{sec-2}
+
+\begin{frame}[label=sec-2-1]{Approaches}
+\begin{itemize}
+\item Pure Scheme library (Racket, JazzScheme, qobischeme-ui)
+\item Porting existing Lisp library (McCLIM, guile-gnome, stklos-gtk-base)
+\item Graphical shell (Tcl/tk, ezd, Rebol, Red)
+\item Other approaches
+\begin{itemize}
+\item WebKit (WebKitGTK+, QtWebKit, QtWebEngine, NW.js, Electron)
+\item GObject Introspection (sbank, cl-gir, seed, Gjs)
+\end{itemize}
+\item Wrapping foreign code
+\begin{itemize}
+\item Java (AWT, Swing, SWT, JAPI)
+\item C++ (Qt, wxWidgets, JUCE, FLTK, CEGUI, neogfx, dear imgui)
+\item C (libsx, KiWi, mrg, nuklear, blendish/OUI, mx and Clutter, libui,
+Agar, GTK, Tcl/Tk, IUP)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-2-2]{Programming paradigms}
+\begin{itemize}
+\item Procedural (good fit, a tad inelegant)
+\item OO (bad fit)
+\item Functional (unknown, FRP, Elm architecture)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-2-3]{Retained vs. Immediate Mode}
+\begin{itemize}
+\item Retained (traditional, callbacks/event handlers)
+\item Immediate (dynamic, simple, less efficient)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-2-4]{Native vs. non-native widgets}
+\begin{itemize}
+\item Native (pretty, feels right, hard to integrate, "heavy-weight")
+\item Non-native (flexible, portable, simple, ugly)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-2-5]{GUI builders}
+\begin{itemize}
+\item Necessary for huge and complicated GUI toolkits (Qt)
+\item Can be avoided in Scheme (REPL-driven development)
+\item SXML/ASCII interface
+\end{itemize}
+\end{frame}
+
+\section{Existing Eggs}
+\label{sec-3}
+
+\begin{frame}[label=sec-3-1]{tk and PS/Tk}
+\begin{itemize}
+\item Pure Scheme interfaces to Tcl/Tk, everything accessible
+\item Not native (somewhat themable), layout managers
+\item Very simple, good for beginners
+\item tk Egg has weird license, PS/Tk is marked obsolete and has no docs
+\item \url{http://www.slideshare.net/r1chardj0n3s/tkinter-does-not-suck}
+\item Alternative: Use pure Tcl, communicate with Scheme process (feathers)
+\item \url{http://philip.greenspun.com/tcl/index.adp}
+\item \url{http://antirez.com/articoli/tclmisunderstood.html}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-3-2]{bb}
+\begin{itemize}
+\item Abstraction over FLTK
+\item SXML/ASCII interface
+\item Absolute positioning necessary, not native (ugly)
+\item Small subset of FLTK API, unclear how useful in practice
+\item Good docs!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-3-3]{iup}
+\begin{itemize}
+\item C interface to IUP
+\item Native widgets for Win32 and GTK2/3
+\item Very nice API, good docs
+\item Hard to build, broken on anything newer than Ubuntu 15.04
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-3-4]{qt-light}
+ \begin{itemize}
+\item Tiny subset of Qt4 (installation assumes it's default\ldots{})
+\item Native look, not quite native behavior
+\item You \alert{must} use \texttt{designer}
+\item Unclear how useful in practice
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-3-5]{webkit}
+ \begin{itemize}
+\item Not exactly a GUI toolkit\ldots{}
+\item Walking security problem
+\item Style with CSS (flexbox), script with JS (SPOCK?)
+\item Injection of Scheme callbacks
+\item Spawn windows to \texttt{file:///...}
+\item Somewhat buggy (focus, finalizer warnings)
+\end{itemize}
+\end{frame}
+
+\section{New Eggs}
+\label{sec-4}
+
+\begin{frame}[label=sec-4-1]{kiwi}
+\begin{itemize}
+\item Neat SDL2 toy, wrote a PKGBUILD
+\item Event handlers, non-native
+\item Very few widgets (5!)
+\item Theme by tileset
+\item Absolute positioning only
+\item Most API is accessible, completely documented
+\item Playground for binding strategies
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-4-2]{nuklear}
+\begin{itemize}
+\item Inspired by dear imgui, intended for game (debugging)
+\item Header library, very little dependencies
+\item Immediate, works against OpenGL-like backends
+\item Imperative API, no callbacks/event handlers
+\item Extremely dynamic, fits well to games
+\item Custom widgets are easy
+\item Bindings to example code only
+\item Docs had to be written from scratch
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-4-3]{libui}
+\begin{itemize}
+\item IUP-style project for Win32, Cocoa, GTK3
+\item Had to write my own PKGBUILD (again)
+\item Very immature, little docs
+\item API is acceptable
+\item SXML interface for less imperative code
+\item Event handlers
+\end{itemize}
+\end{frame}
+
+\section{Outro}
+\label{sec-5}
+
+\begin{frame}[label=sec-5-1]{Summary}
+\begin{itemize}
+\item Tcl/Tk is surprisingly good
+\item WebKit can be useful for special usecases
+\item IUP is perfect in theory, libui can be a replacement for it
+\item nuklear is interesting
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-5-2]{Research topics}
+\begin{itemize}
+\item Bindings to bigger libraries (clutter, Agar, Qt via SMOKE)
+\item GObject wrappers (SPOCK for seed/Gjs?)
+\item Declarative interface for QtQuick/QML
+\item Graphical REPLs (ezd, REBOL/Red?)
+\item I'd love seeing more immediate mode GUIs, ideally in Scheme
+\item Functional GUI toolkits please!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=sec-5-3]{Questions?}
+\end{frame}
+% Emacs 24.5.1 (Org mode 8.2.10)
+\end{document}
