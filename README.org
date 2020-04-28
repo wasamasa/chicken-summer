@@ -1,6 +1,1 @@
-* About
-
-This talk is about my thesis on CHICKEN and its support for GUI
-programming.
-
-Slides with audio: TBD
+Moved to https://depp.brause.cc/talks/
